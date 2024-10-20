@@ -1,27 +1,27 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const bodyParser = require('body-parser');
-const qr = require('qr-image');
-const fs = require('fs');
+const bodyParser = require("body-parser");
+const qr = require("qr-image");
+const fs = require("fs");
+const path = require("path");
+const PORT = 3000;
+// Middleware to parse request body
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 app.get("/", function (req, res) {
-    res.sendFile(__dirname + "\\index.html");
+  res.sendFile(__dirname + "/index.html");
 });
 
-app.post("/", function (req, res) {
-    console.log(req.body.URL);
-    var ourQR = qr.image(req.body.URL);
-    ourQR.pipe(fs.createWriteStream("ourQR.png"));
-    res.download(__dirname + "\\ourQR.png");
-    fs.writeFile('URL.txt', req.body.URL, err => {
-        if (err) {
-            console.error(err);
-        }
-    })
+app.post("/generateQR", function (req, res) {
+  const url = req.body.URL;
+
+  const qrSVG = qr.imageSync(url, { type: "png" });
+  const qrBase64 = Buffer.from(qrSVG).toString("base64");
+
+  res.json({ qrCode: `data:image/png;base64,${qrBase64}` });
 });
 
-
-app.listen(2000, function () {
-    console.log("2000");
+app.listen(PORT, function () {
+  console.log(`Server running on port ${PORT}`);
 });

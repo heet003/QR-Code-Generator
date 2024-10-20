@@ -1,11 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const qr = require("qr-image");
 const fs = require("fs");
 const path = require("path");
-const PORT = 3000;
-// Middleware to parse request body
+const PORT = process.env.PORT;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
